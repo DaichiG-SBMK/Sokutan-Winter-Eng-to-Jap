@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>速単冬休み範囲【英⇒日】</title>
   <style>
     body {
@@ -14,20 +15,17 @@
     }
     h1 {
       font-size: 1.4rem;
-      margin-bottom: 5px;
-    }
-    #description {
-      font-size: 0.9rem;
-      color: #555;
       margin-bottom: 10px;
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid #eee;
     }
 
     #controls {
       margin-bottom: 15px;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
     }
 
     /* ベーススタイル：丸ボタン（統一デザイン） */
@@ -36,12 +34,12 @@
       font-size: 0.85rem;
       padding: 6px 10px;
       border-radius: 999px;
-      margin-right: 6px;
-      margin-bottom: 6px;
       border: 1px solid transparent;
+      margin: 0;
       background: #f5f5f5;
       color: #333;
       transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+      white-space: nowrap;
     }
     .pill-btn:hover {
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -57,16 +55,6 @@
     }
     #random15Btn:hover {
       background: #d6e8ff;
-    }
-
-    #random50Btn {
-      border-color: #2c82c9;
-      color: #0f3553;
-      background: #d9ecff;
-      font-weight: 600;
-    }
-    #random50Btn:hover {
-      background: #c7e1ff;
     }
 
     #maxSetBtn {
@@ -104,7 +92,9 @@
     #status {
       font-size: 0.8rem;
       color: #555;
-      margin-left: 4px;
+      display: inline-block;
+      margin-top: 4px;
+      margin-left: 2px;
     }
 
     #quiz {
@@ -176,39 +166,41 @@
       font-size: 1.1rem;
       margin-bottom: 8px;
     }
+
     #log {
       margin-top: 20px;
       padding-top: 10px;
       border-top: 1px solid #ddd;
       font-size: 0.95rem;
+      text-align: left;
     }
     #log h2 {
       font-size: 1.1rem;
       margin-bottom: 8px;
     }
 
-    /* ▼スマホ縦画面向け：フォントを約1.3〜1.4倍UP▼ */
+    /* ▼スマホ縦画面向け：ほぼ2倍サイズ▼ */
     @media (max-width: 600px) {
       #quiz {
-        padding: 14px;
+        padding: 18px;
       }
       #question {
-        font-size: 1.4rem;
-        line-height: 1.7;
+        font-size: 2.0rem;
+        line-height: 1.9;
       }
       #choices button {
-        font-size: 1.2rem;
-        padding: 10px 12px;
+        font-size: 1.6rem;
+        padding: 14px 18px;
       }
       #feedback {
-        font-size: 1.2rem;
+        font-size: 1.6rem;
       }
       #nextBtn {
-        font-size: 1.05rem;
-        padding: 10px 18px;
+        font-size: 1.4rem;
+        padding: 12px 22px;
       }
       #score {
-        font-size: 1rem;
+        font-size: 1.3rem;
       }
     }
     /* ▲ここまでスマホ用▲ */
@@ -216,23 +208,28 @@
 </head>
 <body>
   <h1>速単冬休み範囲【英⇒日】</h1>
-  <div id="description">
-    ・どの通常テストでも、間違えた単語は「この端末の学習記録」に加算されます。<br>
-    ・「前回のテストで間違えた問題に再チャレンジ」「累計で間違いが多い語に再チャレンジ」での誤答は、<br>
-    　<strong>この端末の学習記録には加算されません。</strong><br>
-  </div>
 
   <div id="controls">
-    <button id="random15Btn" class="pill-btn">ランダム15問テスト</button>
-    <button id="random50Btn" class="pill-btn">ランダム50問テスト</button>
-    <button id="maxSetBtn" class="pill-btn">MAX数にチャレンジ</button>
-    <button id="retryLastBtn" class="pill-btn">前回のテストで間違えた問題に再チャレンジ</button>
-    <button id="retryTopBtn" class="pill-btn">累計で間違いが多い語に再チャレンジ</button>
-    <button id="showLogBtn" class="pill-btn">この端末の学習記録</button>
-    <button id="homeBtn" class="pill-btn"
-            onclick="location.href='https://daichig-sbmk.github.io/vocab-quiz-top/'">
-      トップページ
-    </button>
+    <!-- 1段目：15問／MAX／前回×／×多い -->
+    <div class="btn-row">
+      <button id="random15Btn" class="pill-btn">15問</button>
+      <button id="maxSetBtn" class="pill-btn">MAX（--問）に挑戦</button>
+      <button id="retryLastBtn" class="pill-btn">前回×の語</button>
+      <button id="retryTopBtn" class="pill-btn">×が多い語</button>
+    </div>
+
+    <!-- 2段目：学習記録／トップページ -->
+    <div class="btn-row">
+      <button id="showLogBtn" class="pill-btn">学習記録</button>
+      <button id="homeBtn" class="pill-btn"
+              onclick="location.href='https://daichig-sbmk.github.io/vocab-quiz-top/'">
+        トップページ
+      </button>
+    </div>
+
+    <!-- 将来用に残しておく hidden 50問ボタン（画面には出ません） -->
+    <button id="random50Btn" class="pill-btn" style="display:none;">50問</button>
+
     <span id="status"></span>
   </div>
 
@@ -251,7 +248,7 @@
     const LABELS = ['ア', 'イ', 'ウ', 'エ'];
     const STORAGE_KEY = 'vocabQuizStats_v1';
 
-    // mode: 'normal15' / 'normal50' / 'normalMax' / 'retryLast' / 'retryTop'
+    // mode: 'normal15' / 'normalMax' / 'retryLast' / 'retryTop'
     let currentMode = 'normal15';
 
     let words = [];          // {id, eng, jp, pos}
@@ -398,7 +395,7 @@
       const random50Btn = document.getElementById('random50Btn');
 
       if (!words || words.length === 0) {
-        random50Btn.style.display = 'none';
+        if (random50Btn) random50Btn.style.display = 'none';
         maxBtn.style.display = 'none';
         return;
       }
@@ -410,23 +407,20 @@
         if (cap > 0) total += cap;
       }
 
-      if (total >= 75) {
-        random50Btn.style.display = 'inline-block';
-      } else {
-        random50Btn.style.display = 'none';
-      }
+      // 50問ボタンは常に非表示
+      if (random50Btn) random50Btn.style.display = 'none';
 
       if (total >= 30) {
         maxBtn.style.display = 'inline-block';
-        maxBtn.textContent = `MAX数（${total}問）にチャレンジ`;
+        maxBtn.textContent = `MAX（${total}問）に挑戦`;
       } else {
         maxBtn.style.display = 'none';
       }
     }
 
-    // ランダム15/50問テスト（90％：出題回数が少ない語／10％：これまでの誤答）
+    // ランダム15問テスト（90％：出題回数が少ない語／10％：これまでの誤答）
     function generateRandomTest(target) {
-      currentMode = (target === 15) ? 'normal15' : 'normal50';
+      currentMode = 'normal15'; // 15問のみ運用
 
       const status = document.getElementById('status');
       const summaryDiv = document.getElementById('summary');
@@ -628,14 +622,13 @@
         .map(pos => `${pos}:${questionWordsByPos[pos].length}問`)
         .join(' / ');
 
-      const label = target === 15 ? 'ランダム15問' : 'ランダム50問';
       status.textContent =
-        `【${label}】 単語数：${words.length}件 / 今回の問題：${quizQuestions.length}問（${posSummary}）`;
+        `【15問】 単語数：${words.length}件 / 今回の問題：${quizQuestions.length}問（${posSummary}）`;
 
       showQuestion();
     }
 
-    // MAX数にチャレンジ（各品詞ごとに floor(N_pos/4) 問）
+    // MAX数にチャレンジ
     function generateMaxSet() {
       currentMode = 'normalMax';
 
@@ -731,12 +724,12 @@
         .join(' / ');
 
       status.textContent =
-        `【MAX数にチャレンジ】 単語数：${words.length}件 / 今回の問題：${quizQuestions.length}問（${posSummary}）`;
+        `【MAX】 単語数：${words.length}件 / 今回の問題：${quizQuestions.length}問（${posSummary}）`;
 
       showQuestion();
     }
 
-    // 前回のテストで間違えた問題に再チャレンジ
+    // 前回×の語
     function generateRetryFromLast() {
       currentMode = 'retryLast';
 
@@ -747,7 +740,7 @@
 
       if (!lastIncorrectMain || lastIncorrectMain.length === 0) {
         document.getElementById('question').textContent =
-          '前回の通常テスト（15問／50問／MAX）の誤答がありません。先に通常テストを解いてください。';
+          '前回の通常テスト（15問／MAX）の誤答がありません。先に通常テストを解いてください。';
         document.getElementById('choices').innerHTML = '';
         document.getElementById('feedback').textContent = '';
         document.getElementById('nextBtn').disabled = true;
@@ -801,12 +794,12 @@
       correctCount = 0;
 
       status.textContent =
-        `【再チャレンジ：前回の誤答】 出題数：${quizQuestions.length}問（このモードでの誤答は学習記録に加算されません）`;
+        `【前回×の語】 出題数：${quizQuestions.length}問（このモードでの誤答は学習記録に加算されません）`;
 
       showQuestion();
     }
 
-    // 累計で間違いが多い語に再チャレンジ（上位30語）
+    // ×が多い語（累計誤答上位）
     function generateRetryFromTop() {
       currentMode = 'retryTop';
 
@@ -883,7 +876,7 @@
       correctCount = 0;
 
       status.textContent =
-        `【再チャレンジ：累計で間違いが多い語】 出題数：${quizQuestions.length}問（最大30問／このモードでの誤答は学習記録に加算されません）`;
+        `【×が多い語】 出題数：${quizQuestions.length}問（最大30問／このモードでの誤答は学習記録に加算されません）`;
 
       showQuestion();
     }
@@ -920,7 +913,7 @@
 
       const q = quizQuestions[current];
 
-      if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
+      if (currentMode === 'normal15' || currentMode === 'normalMax') {
         incrementAskedForQuestion(q);
       }
 
@@ -962,7 +955,7 @@
           pos: q.pos
         });
 
-        if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
+        if (currentMode === 'normal15' || currentMode === 'normalMax') {
           recordWrongAnswer(q, correctOption.text);
         }
       }
@@ -989,14 +982,14 @@
         summaryDiv.innerHTML =
           `<h2>今回のまとめ</h2><p>全問正解でした。すばらしいです 🎉</p>${note}`;
 
-        if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
+        if (currentMode === 'normal15' || currentMode === 'normalMax') {
           lastIncorrectMain = [];
         }
         return;
       }
 
       let title =
-        (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax')
+        (currentMode === 'normal15' || currentMode === 'normalMax')
           ? '今回の間違えた問題'
           : '今回の再チャレンジで間違えた問題';
 
@@ -1015,16 +1008,17 @@
       html += '</ol>';
 
       if (currentMode === 'retryLast' || currentMode === 'retryTop') {
-        html += '<p style="font-size:0.85rem; color:#777;">※ このモードでの誤答は「この端末の学習記録」には加算されません。</p>';
+        html += '<p style="font-size:0.85rem; color:#777;">※ このモードでの誤答は「学習記録」には加算されません。</p>';
       }
 
       summaryDiv.innerHTML = html;
 
-      if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
+      if (currentMode === 'normal15' || currentMode === 'normalMax') {
         lastIncorrectMain = incorrectList.map(x => ({ ...x }));
       }
     }
 
+    // 学習記録：左詰め・コンパクト表示
     function showStatsOnPage() {
       const logDiv = document.getElementById('log');
       loadStats();
@@ -1032,7 +1026,7 @@
       const entries = Object.entries(stats);
       if (entries.length === 0) {
         logDiv.innerHTML =
-          '<h2>この端末の学習記録</h2><p>まだ間違えた単語の記録がありません。</p>';
+          '<h2>学習記録</h2><p>まだ間違えた単語の記録がありません。</p>';
         return;
       }
 
@@ -1043,26 +1037,19 @@
         return a[0].localeCompare(b[0]);
       });
 
-      let html = '<h2>この端末の学習記録</h2>';
-      html += '<p>よく間違える単語から順に並んでいます。（再チャレンジモードでの誤答は含みません）</p>';
-      html += '<table style="width:100%; border-collapse:collapse; font-size:0.9rem;">';
-      html += '<thead><tr>' +
-              '<th style="border-bottom:1px solid #ccc; text-align:left;">英単語</th>' +
-              '<th style="border-bottom:1px solid #ccc; text-align:left;">日本語</th>' +
-              '<th style="border-bottom:1px solid #ccc; text-align:left;">品詞</th>' +
-              '<th style="border-bottom:1px solid #ccc; text-align:right;">誤答回数</th>' +
-              '</tr></thead><tbody>';
+      let html = '<h2>学習記録</h2>';
+      html += '<p style="font-size:0.85rem; color:#555;">よく間違える単語から順に表示しています。（「前回×の語」「×が多い語」での誤答は含みません）</p>';
+      html += '<ul style="list-style:none; padding-left:0; margin-left:0;">';
 
       entries.forEach(([eng, data]) => {
-        html += '<tr>' +
-          `<td style="border-bottom:1px solid #eee; padding:2px 4px;">${eng}</td>` +
-          `<td style="border-bottom:1px solid #eee; padding:2px 4px;">${data.jp || ''}</td>` +
-          `<td style="border-bottom:1px solid #eee; padding:2px 4px;">${data.pos || ''}</td>` +
-          `<td style="border-bottom:1px solid #eee; padding:2px 4px; text-align:right;">${data.wrong || 0}</td>` +
-          '</tr>';
+        const jp = data.jp || '';
+        const w = data.wrong || 0;
+        html += `<li style="border-bottom:1px solid #eee; padding:2px 0;">` +
+                `<strong>${eng}</strong> － ${jp}` +
+                `（誤答：${w}回）</li>`;
       });
 
-      html += '</tbody></table>';
+      html += '</ul>';
       logDiv.innerHTML = html;
     }
 
@@ -1075,9 +1062,12 @@
       generateRandomTest(15);
     });
 
-    document.getElementById('random50Btn').addEventListener('click', () => {
-      generateRandomTest(50);
-    });
+    const random50Btn = document.getElementById('random50Btn');
+    if (random50Btn) {
+      random50Btn.addEventListener('click', () => {
+        generateRandomTest(50);
+      });
+    }
 
     document.getElementById('maxSetBtn').addEventListener('click', () => {
       generateMaxSet();
@@ -1095,7 +1085,6 @@
       showStatsOnPage();
     });
 
-    // ページ読み込み時にCSVを読み込む
     window.addEventListener('load', () => {
       loadWords();
     });

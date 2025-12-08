@@ -25,97 +25,80 @@
       padding: 8px 10px;
       border: 1px solid #eee;
     }
+
     #controls {
       margin-bottom: 15px;
     }
-    button {
+
+    /* ベーススタイル：丸ボタン（統一デザイン） */
+    .pill-btn {
       cursor: pointer;
       font-size: 0.85rem;
-      transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
-    }
-    /* ランダム15問テストボタン：落ち着いた青系 */
-    #random15Btn {
       padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid #4a90e2;
       margin-right: 6px;
       margin-bottom: 6px;
+      border: 1px solid transparent;
+      background: #f5f5f5;
+      color: #333;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    }
+    .pill-btn:hover {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* 役割別カラー */
+    #random15Btn {
+      border-color: #4a90e2;
       color: #17446f;
       background: #e7f1ff;
       font-weight: 600;
     }
     #random15Btn:hover {
       background: #d6e8ff;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-      transform: translateY(-1px);
     }
 
-    /* ランダム50問テストボタン：少し濃いめのブルー系 */
     #random50Btn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #2c82c9;
-      margin-right: 6px;
-      margin-bottom: 6px;
+      border-color: #2c82c9;
       color: #0f3553;
       background: #d9ecff;
       font-weight: 600;
     }
     #random50Btn:hover {
       background: #c7e1ff;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-      transform: translateY(-1px);
     }
 
-    /* MAX数：やる気スイッチ感のあるオレンジ系 */
     #maxSetBtn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #f39c12;
-      margin-right: 6px;
-      margin-bottom: 6px;
+      border-color: #f39c12;
       color: #8a4b00;
       background: #fff4e0;
       font-weight: 700;
     }
     #maxSetBtn:hover {
       background: #ffe3b8;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-      transform: translateY(-1px);
     }
 
-    /* 再チャレンジ系：控えめグレー系 */
     #retryLastBtn,
     #retryTopBtn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #bbb;
-      margin-right: 6px;
-      margin-bottom: 6px;
+      border-color: #bbb;
       color: #444;
       background: #f5f5f5;
     }
     #retryLastBtn:hover,
     #retryTopBtn:hover {
       background: #ececec;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-      transform: translateY(-1px);
     }
 
-    /* 学習記録ボタン：少し緑がかった補助ボタン */
-    #showLogBtn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #44a08d;
-      margin-right: 6px;
-      margin-bottom: 6px;
+    #showLogBtn,
+    #homeBtn {
+      border-color: #44a08d;
       color: #205246;
       background: #e6f4f1;
     }
-    #showLogBtn:hover {
+    #showLogBtn:hover,
+    #homeBtn:hover {
       background: #d5ece7;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-      transform: translateY(-1px);
     }
 
     #status {
@@ -133,6 +116,7 @@
     #question {
       margin: 15px 0;
       font-weight: bold;
+      font-size: 1.1rem;
     }
     #choices button {
       display: block;
@@ -143,6 +127,7 @@
       border: 1px solid #ccc;
       text-align: left;
       background: #fff;
+      font-size: 0.95rem;
     }
     #choices button:hover:not(:disabled) {
       background: #f7faff;
@@ -151,6 +136,7 @@
       opacity: 0.6;
       cursor: default;
     }
+
     #feedback {
       margin-top: 8px;
       font-weight: bold;
@@ -174,6 +160,7 @@
       box-shadow: none;
       transform: none;
     }
+
     #score {
       margin-top: 10px;
       font-size: 0.9rem;
@@ -199,24 +186,53 @@
       font-size: 1.1rem;
       margin-bottom: 8px;
     }
+
+    /* ▼スマホ縦画面向け：フォントを約1.3〜1.4倍UP▼ */
+    @media (max-width: 600px) {
+      #quiz {
+        padding: 14px;
+      }
+      #question {
+        font-size: 1.4rem;
+        line-height: 1.7;
+      }
+      #choices button {
+        font-size: 1.2rem;
+        padding: 10px 12px;
+      }
+      #feedback {
+        font-size: 1.2rem;
+      }
+      #nextBtn {
+        font-size: 1.05rem;
+        padding: 10px 18px;
+      }
+      #score {
+        font-size: 1rem;
+      }
+    }
+    /* ▲ここまでスマホ用▲ */
   </style>
 </head>
 <body>
   <h1>速単冬休み範囲【英⇒日】</h1>
   <div id="description">
-    ・英単語 → 日本語訳を答える４択クイズです。<br>
     ・どの通常テストでも、間違えた単語は「この端末の学習記録」に加算されます。<br>
     ・「前回のテストで間違えた問題に再チャレンジ」「累計で間違いが多い語に再チャレンジ」での誤答は、<br>
     　<strong>この端末の学習記録には加算されません。</strong><br>
   </div>
 
   <div id="controls">
-    <button id="random15Btn">ランダム15問テスト</button>
-    <button id="random50Btn">ランダム50問テスト</button>
-    <button id="maxSetBtn">MAX数にチャレンジ</button>
-    <button id="retryLastBtn">前回のテストで間違えた問題に再チャレンジ</button>
-    <button id="retryTopBtn">累計で間違いが多い語に再チャレンジ</button>
-    <button id="showLogBtn">この端末の学習記録</button>
+    <button id="random15Btn" class="pill-btn">ランダム15問テスト</button>
+    <button id="random50Btn" class="pill-btn">ランダム50問テスト</button>
+    <button id="maxSetBtn" class="pill-btn">MAX数にチャレンジ</button>
+    <button id="retryLastBtn" class="pill-btn">前回のテストで間違えた問題に再チャレンジ</button>
+    <button id="retryTopBtn" class="pill-btn">累計で間違いが多い語に再チャレンジ</button>
+    <button id="showLogBtn" class="pill-btn">この端末の学習記録</button>
+    <button id="homeBtn" class="pill-btn"
+            onclick="location.href='https://daichig-sbmk.github.io/vocab-quiz-top/'">
+      トップページ
+    </button>
     <span id="status"></span>
   </div>
 
@@ -243,10 +259,9 @@
     let current = 0;
     let correctCount = 0;
     let incorrectList = [];      // この回での誤答
-    let lastIncorrectMain = [];  // 直近の「通常テスト（15/50 or MAX）」での誤答
-    let stats = {};              // { [english]: { jp, pos, wrong } }
+    let lastIncorrectMain = [];  // 直近の通常テストの誤答
+    let stats = {};              // { [english]: { jp, pos, wrong, asked } }
 
-    // シャッフル
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -254,7 +269,6 @@
       }
     }
 
-    // 学習記録読み込み
     function loadStats() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -262,42 +276,79 @@
           stats = {};
         } else {
           stats = JSON.parse(raw);
-          if (typeof stats !== 'object' || stats === null) {
-            stats = {};
-          }
+          if (typeof stats !== 'object' || stats === null) stats = {};
         }
-      } catch (e) {
-        console.warn('学習記録の読み込みに失敗しました。初期化します。', e);
+      } catch {
         stats = {};
       }
     }
 
-    // 学習記録保存
     function saveStats() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
       } catch (e) {
-        console.warn('学習記録の保存に失敗しました。', e);
+        console.warn('学習記録の保存に失敗しました', e);
       }
+    }
+
+    function getAsked(eng) {
+      return (stats[eng] && typeof stats[eng].asked === 'number')
+        ? stats[eng].asked
+        : 0;
+    }
+
+    function getWrong(eng) {
+      return (stats[eng] && typeof stats[eng].wrong === 'number')
+        ? stats[eng].wrong
+        : 0;
     }
 
     // 誤答を学習記録に追加（通常テストのみ）
     function recordWrongAnswer(questionObj, correctText) {
       const key = questionObj.questionText;
+      if (!key) return;
+
+      const base = words.find(w => w.eng === key);
+
       if (!stats[key]) {
         stats[key] = {
-          jp: correctText,
-          pos: questionObj.pos || '',
-          wrong: 0
+          jp: base ? base.jp : correctText,
+          pos: base ? base.pos : (questionObj.pos || ''),
+          wrong: 0,
+          asked: 0
         };
       }
-      stats[key].jp = correctText;
-      stats[key].pos = questionObj.pos || stats[key].pos;
-      stats[key].wrong += 1;
+      if (base) {
+        stats[key].jp = base.jp;
+        stats[key].pos = base.pos;
+      }
+      stats[key].wrong = (stats[key].wrong || 0) + 1;
       saveStats();
     }
 
-    // CSV読み込み
+    // 出題回数（asked）をカウント（通常テストのみ）
+    function incrementAskedForQuestion(q) {
+      const key = q.questionText;
+      if (!key) return;
+
+      const base = words.find(w => w.eng === key);
+      const correctText = q.options.find(o => o.isCorrect)?.text || (base ? base.jp : '');
+
+      if (!stats[key]) {
+        stats[key] = {
+          jp: base ? base.jp : correctText,
+          pos: base ? base.pos : (q.pos || ''),
+          wrong: 0,
+          asked: 0
+        };
+      } else if (base) {
+        stats[key].jp = stats[key].jp || base.jp;
+        stats[key].pos = stats[key].pos || base.pos;
+      }
+      stats[key].asked = (stats[key].asked || 0) + 1;
+      saveStats();
+    }
+
     async function loadWords() {
       const status = document.getElementById('status');
       try {
@@ -323,7 +374,7 @@
         }
 
         status.textContent = `単語数：${words.length}件 読み込み完了`;
-        updateButtonsByCapacity(); // ← ランダム50／MAXボタンの表示更新
+        updateButtonsByCapacity();
         generateRandomTest(15);    // 初回は15問テスト
       } catch (e) {
         console.error(e);
@@ -333,7 +384,6 @@
       }
     }
 
-    // 品詞ごとにグルーピング
     function groupByPos() {
       const byPos = {};
       for (const w of words) {
@@ -343,7 +393,6 @@
       return byPos;
     }
 
-    // 最大作成数に応じて、「ランダム50」「MAX」のボタン表示を制御
     function updateButtonsByCapacity() {
       const maxBtn = document.getElementById('maxSetBtn');
       const random50Btn = document.getElementById('random50Btn');
@@ -357,18 +406,16 @@
       const byPos = groupByPos();
       let total = 0;
       for (const pos of Object.keys(byPos)) {
-        const cap = Math.floor(byPos[pos].length / 4); // その品詞から作れる最大数
+        const cap = Math.floor(byPos[pos].length / 4);
         if (cap > 0) total += cap;
       }
 
-      // ランダム50問テスト：最大数が 75問以上のときだけ表示
       if (total >= 75) {
         random50Btn.style.display = 'inline-block';
       } else {
         random50Btn.style.display = 'none';
       }
 
-      // MAX数：最大数が 30問以上のときだけ表示
       if (total >= 30) {
         maxBtn.style.display = 'inline-block';
         maxBtn.textContent = `MAX数（${total}問）にチャレンジ`;
@@ -377,8 +424,10 @@
       }
     }
 
-    // ランダム15/50問テスト用の共通関数
+    // ランダム15/50問テスト（90％：出題回数が少ない語／10％：これまでの誤答）
     function generateRandomTest(target) {
+      currentMode = (target === 15) ? 'normal15' : 'normal50';
+
       const status = document.getElementById('status');
       const summaryDiv = document.getElementById('summary');
       summaryDiv.innerHTML = '';
@@ -470,23 +519,60 @@
       let finalTotalQuestions = 0;
 
       for (const pos of posList) {
-        const needed = desiredByPos[pos];
-        if (needed <= 0) continue;
+        const qCount = desiredByPos[pos];
+        if (qCount <= 0) continue;
 
         const list = [...byPos[pos]];
-        shuffle(list);
 
-        const qWords = list.slice(0, needed);
-        const dWords = list.slice(needed);
+        const wrongWordsPos = list.filter(w => getWrong(w.eng) > 0);
+        let othersPos = list.filter(w => getWrong(w.eng) === 0);
 
-        if (dWords.length < needed * 3) {
-          console.warn(`品詞 ${pos} で誤答用が不足しました。`);
-          continue;
+        othersPos.sort((a, b) => {
+          const aAsked = getAsked(a.eng);
+          const bAsked = getAsked(b.eng);
+          if (aAsked !== bAsked) return aAsked - bAsked;
+          return Math.random() - 0.5;
+        });
+
+        let qWrongTarget = Math.round(qCount * 0.1);
+        if (qWrongTarget > wrongWordsPos.length) qWrongTarget = wrongWordsPos.length;
+        if (qWrongTarget < 0) qWrongTarget = 0;
+
+        let qOtherTarget = qCount - qWrongTarget;
+        if (qOtherTarget < 0) qOtherTarget = 0;
+
+        const wrongCopy = [...wrongWordsPos];
+        shuffle(wrongCopy);
+        const selectedWrong = wrongCopy.slice(0, qWrongTarget);
+        const selectedOther = othersPos.slice(0, qOtherTarget);
+
+        let qWords = selectedWrong.concat(selectedOther);
+
+        if (qWords.length < qCount) {
+          const usedSet = new Set(qWords.map(w => w.eng));
+          const remainingCandidates = list.filter(w => !usedSet.has(w.eng));
+          shuffle(remainingCandidates);
+          qWords = qWords.concat(remainingCandidates.slice(0, qCount - qWords.length));
         }
+
+        const uniqMap = {};
+        const uniq = [];
+        for (const w of qWords) {
+          if (!uniqMap[w.eng]) {
+            uniqMap[w.eng] = true;
+            uniq.push(w);
+          }
+        }
+        if (uniq.length > qCount) uniq.length = qCount;
+        qWords = uniq;
+        if (qWords.length === 0) continue;
+
+        const qSet = new Set(qWords.map(w => w.eng));
+        const dWords = list.filter(w => !qSet.has(w.eng));
 
         questionWordsByPos[pos] = qWords;
         distractorsByPos[pos] = dWords;
-        finalTotalQuestions += needed;
+        finalTotalQuestions += qWords.length;
       }
 
       if (finalTotalQuestions === 0) {
@@ -802,7 +888,6 @@
       showQuestion();
     }
 
-    // 現在の問題を表示
     function showQuestion() {
       const qDiv = document.getElementById('question');
       const cDiv = document.getElementById('choices');
@@ -835,6 +920,10 @@
 
       const q = quizQuestions[current];
 
+      if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
+        incrementAskedForQuestion(q);
+      }
+
       qDiv.textContent = `第${current + 1}問： ${q.questionText}`;
       cDiv.innerHTML = '';
       feedback.textContent = '';
@@ -851,7 +940,6 @@
         `進行状況：${current} / ${quizQuestions.length}問中　正解 ${correctCount}問`;
     }
 
-    // 解答チェック
     function checkAnswer(selectedIndex) {
       const q = quizQuestions[current];
       const feedback = document.getElementById('feedback');
@@ -874,7 +962,6 @@
           pos: q.pos
         });
 
-        // ランダム15／50／MAXモードのときだけ学習記録に加算
         if (currentMode === 'normal15' || currentMode === 'normal50' || currentMode === 'normalMax') {
           recordWrongAnswer(q, correctOption.text);
         }
@@ -891,7 +978,6 @@
         `進行状況：${current + 1} / ${quizQuestions.length}問中　正解 ${correctCount}問`;
     }
 
-    // この回のまとめ表示
     function renderSummary() {
       const summaryDiv = document.getElementById('summary');
 
@@ -939,7 +1025,6 @@
       }
     }
 
-    // この端末の学習記録を表示
     function showStatsOnPage() {
       const logDiv = document.getElementById('log');
       loadStats();
@@ -981,19 +1066,16 @@
       logDiv.innerHTML = html;
     }
 
-    // イベント設定
     document.getElementById('nextBtn').addEventListener('click', () => {
       current++;
       showQuestion();
     });
 
     document.getElementById('random15Btn').addEventListener('click', () => {
-      currentMode = 'normal15';
       generateRandomTest(15);
     });
 
     document.getElementById('random50Btn').addEventListener('click', () => {
-      currentMode = 'normal50';
       generateRandomTest(50);
     });
 
@@ -1014,7 +1096,9 @@
     });
 
     // ページ読み込み時にCSVを読み込む
-    loadWords();
+    window.addEventListener('load', () => {
+      loadWords();
+    });
   </script>
 </body>
 </html>

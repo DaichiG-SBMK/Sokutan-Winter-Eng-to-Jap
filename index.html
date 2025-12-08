@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>英単語４択クイズ（英→日）</title>
+  <title>英単語４択クイズ（日→英）</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -252,18 +252,21 @@
 
   <script>
     const LABELS = ['ア', 'イ', 'ウ', 'エ'];
-    const STORAGE_KEY = 'vocabQuizStats_v1';
+    // 英→日版と別のキーにしておくと記録が混ざりません
+    const STORAGE_KEY = 'vocabQuizStats_JtoE_v1';
 
     // mode: 'normal15' / 'normalMax' / 'retryLast' / 'retryTop'
     let currentMode = 'normal15';
 
-    let words = [];          // {id, eng, jp, pos}
+    // words: {id, jp, eng, pos}
+    let words = [];
     let quizQuestions = [];
     let current = 0;
     let correctCount = 0;
     let incorrectList = [];      // この回での誤答
     let lastIncorrectMain = [];  // 直近の通常テストの誤答
-    let stats = {};              // { [english]: { jp, pos, wrong, asked } }
+    // stats: { [eng]: { jp, pos, wrong, asked } }
+    let stats = {};
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -307,15 +310,15 @@
     }
 
     // 誤答を学習記録に追加（通常テストのみ）
-    function recordWrongAnswer(questionObj, correctText) {
-      const key = questionObj.questionText;
+    function recordWrongAnswer(questionObj) {
+      const key = questionObj.baseEng;
       if (!key) return;
 
       const base = words.find(w => w.eng === key);
 
       if (!stats[key]) {
         stats[key] = {
-          jp: base ? base.jp : correctText,
+          jp: base ? base.jp : questionObj.questionText,
           pos: base ? base.pos : (questionObj.pos || ''),
           wrong: 0,
           asked: 0
@@ -331,15 +334,14 @@
 
     // 出題回数（asked）をカウント（通常テストのみ）
     function incrementAskedForQuestion(q) {
-      const key = q.questionText;
+      const key = q.baseEng;
       if (!key) return;
 
       const base = words.find(w => w.eng === key);
-      const correctText = q.options.find(o => o.isCorrect)?.text || (base ? base.jp : '');
 
       if (!stats[key]) {
         stats[key] = {
-          jp: base ? base.jp : correctText,
+          jp: base ? base.jp : q.questionText,
           pos: base ? base.pos : (q.pos || ''),
           wrong: 0,
           asked: 0
@@ -362,24 +364,28 @@
 
         const lines = text.trim().split('\n');
 
-        // 1行目をタイトルとして使用
+        // 1行目をタイトルとして使用（末尾のカンマ類は削除）
         const titleElem = document.getElementById('pageTitle');
+        let finalTitle = '英単語４択クイズ（日→英）';
         if (lines.length > 0) {
           const raw = lines[0].trim();
           const noTrailingCommas = raw.replace(/,+$/, '');
-          titleElem.textContent = noTrailingCommas || '英単語４択クイズ（英→日）';
-        } else {
-          titleElem.textContent = '英単語４択クイズ（英→日）';
+          if (noTrailingCommas) finalTitle = noTrailingCommas;
         }
-        // 2行目以降をデータとして読み込む（2行目はヘッダー行想定）
-        for (let i = 2; i < lines.length; i++) {
-          const cols = lines[i].split(',');
-          if (cols.length < 4) continue;
-          const [id, eng, jp, pos] = cols.map(c => c.trim());
-          if (!eng || !jp || !pos) continue;
-          words.push({ id, eng, jp, pos });
-        }
+        titleElem.textContent = finalTitle;
+        // タブのタイトルも合わせたい場合は↓を有効に
+        // document.title = finalTitle;
 
+        // 2行目以降をデータとして読み込む（2行目はヘッダー行想定）
+for (let i = 2; i < lines.length; i++) {
+  const cols = lines[i].split(',');
+  if (cols.length < 4) continue;
+  // 2列目が eng, 3列目が jp
+  const [id, eng, jp, pos] = cols.map(c => c.trim());
+  if (!eng || !jp || !pos) continue;
+  // プロパティ名は jp, eng で正しく持たせる
+  words.push({ id, jp, eng, pos });
+}
         if (words.length < 4) {
           document.getElementById('question').textContent =
             `単語が4個未満です（現在 ${words.length}個）。4択問題を作るには少なくとも4語必要です。`;
@@ -437,7 +443,7 @@
 
     // ランダム15問テスト（90％：出題回数が少ない語／10％：これまでの誤答）
     function generateRandomTest(target) {
-      currentMode = 'normal15'; // 15問のみ運用
+      currentMode = 'normal15';
 
       const status = document.getElementById('status');
       const summaryDiv = document.getElementById('summary');
@@ -470,7 +476,6 @@
       if (totalCapacity === 0) {
         document.getElementById('question').textContent =
           'どの品詞も4語未満のため、問題を作成できません。';
-        return;
       }
 
       const targetTotal = Math.min(target, totalCapacity);
@@ -615,14 +620,16 @@
           poolIndex += 3;
 
           let options = [
-            { text: qWord.jp, isCorrect: true },
-            ...wrongWords.map(w => ({ text: w.jp, isCorrect: false }))
+            { text: qWord.eng, isCorrect: true },
+            ...wrongWords.map(w => ({ text: w.eng, isCorrect: false }))
           ];
           shuffle(options);
 
           quizQuestions.push({
-            questionText: qWord.eng,
+            questionText: qWord.jp,   // 出題は日本語
             pos,
+            baseEng: qWord.eng,
+            baseJp: qWord.jp,
             options
           });
         }
@@ -716,14 +723,16 @@
           poolIndex += 3;
 
           let options = [
-            { text: qWord.jp, isCorrect: true },
-            ...wrongWords.map(w => ({ text: w.jp, isCorrect: false }))
+            { text: qWord.eng, isCorrect: true },
+            ...wrongWords.map(w => ({ text: w.eng, isCorrect: false }))
           ];
           shuffle(options);
 
           quizQuestions.push({
-            questionText: qWord.eng,
+            questionText: qWord.jp,
             pos,
+            baseEng: qWord.eng,
+            baseJp: qWord.jp,
             options
           });
         }
@@ -769,8 +778,8 @@
 
       for (const item of lastIncorrectMain) {
         const base =
-          words.find(w => w.eng === item.questionText && (w.pos === item.pos || !item.pos)) ||
-          words.find(w => w.eng === item.questionText);
+          words.find(w => w.eng === item.baseEng) ||
+          words.find(w => w.jp === item.jp);
 
         if (!base) continue;
 
@@ -783,14 +792,16 @@
         const wrongWords = shuffled.slice(0, 3);
 
         let options = [
-          { text: base.jp, isCorrect: true },
-          ...wrongWords.map(w => ({ text: w.jp, isCorrect: false }))
+          { text: base.eng, isCorrect: true },
+          ...wrongWords.map(w => ({ text: w.eng, isCorrect: false }))
         ];
         shuffle(options);
 
         questions.push({
-          questionText: base.eng,
+          questionText: base.jp,
           pos,
+          baseEng: base.eng,
+          baseJp: base.jp,
           options
         });
       }
@@ -865,14 +876,16 @@
         const wrongWords = shuffled.slice(0, 3);
 
         let options = [
-          { text: base.jp, isCorrect: true },
-          ...wrongWords.map(w => ({ text: w.jp, isCorrect: false }))
+          { text: base.eng, isCorrect: true },
+          ...wrongWords.map(w => ({ text: w.eng, isCorrect: false }))
         ];
         shuffle(options);
 
         questions.push({
-          questionText: base.eng,
+          questionText: base.jp,
           pos,
+          baseEng: base.eng,
+          baseJp: base.jp,
           options
         });
       }
@@ -919,7 +932,7 @@
       }
 
       if (current >= quizQuestions.length) {
-        // ★ここを「お疲れさまでした！」に変更
+        // 終了メッセージ
         qDiv.textContent = 'お疲れさまでした！';
         cDiv.innerHTML = '';
         feedback.textContent = '';
@@ -968,13 +981,15 @@
           `不正解… 正解は ${LABELS[correctIndex]}：${correctOption.text} です。`;
 
         incorrectList.push({
-          questionText: q.questionText,
-          correctText: correctOption.text,
-          pos: q.pos
+          jp: q.questionText,
+          eng: correctOption.text,
+          pos: q.pos,
+          baseEng: q.baseEng,
+          baseJp: q.baseJp
         });
 
         if (currentMode === 'normal15' || currentMode === 'normalMax') {
-          recordWrongAnswer(q, correctOption.text);
+          recordWrongAnswer(q);
         }
       }
 
@@ -1013,20 +1028,20 @@
           : '今回の再チャレンジで間違えた問題';
 
       let html = `<h2>${title}</h2>`;
-      html += '<p>英語と日本語訳、品詞をもう一度確認しましょう。</p>';
+      html += '<p>日本語と英単語、品詞をもう一度確認しましょう。</p>';
 
       html += '<table style="border-collapse:collapse; font-size:0.95rem; text-align:left; width:auto;">';
       html += '<thead><tr>' +
-              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
               '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">日本語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
               '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:right;">品詞</th>' +
               '</tr></thead><tbody>';
 
       incorrectList.forEach(item => {
-        const posText = item.pos || ''; // ★括弧なしでそのまま表示
+        const posText = item.pos || '';
         html += '<tr>' +
-          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.questionText}</td>` +
-          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.correctText}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.jp}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.eng}</td>` +
           `<td style="border-bottom:1px solid #eee; padding:2px 6px; text-align:right;">${posText}</td>` +
         '</tr>';
       });
@@ -1050,7 +1065,7 @@
       loadStats();
 
       let entries = Object.entries(stats)
-        .filter(([eng, data]) => (data.wrong || 0) > 0);  // ★誤答0は表示しない
+        .filter(([eng, data]) => (data.wrong || 0) > 0);  // 誤答0は表示しない
 
       if (entries.length === 0) {
         logDiv.innerHTML =
@@ -1070,8 +1085,8 @@
 
       html += '<table style="border-collapse:collapse; font-size:0.9rem; text-align:left; width:auto;">';
       html += '<thead><tr>' +
-              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
               '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">日本語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
               '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:right;">回</th>' +
               '</tr></thead><tbody>';
 
@@ -1079,9 +1094,8 @@
         const jp = data.jp || '';
         const w = data.wrong || 0;
         html += '<tr>' +
-          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${eng}</td>` +
           `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${jp}</td>` +
-          // ★「3回」→「3」のみ
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${eng}</td>` +
           `<td style="border-bottom:1px solid #eee; padding:2px 6px; text-align:right;">${w}</td>` +
         '</tr>';
       });

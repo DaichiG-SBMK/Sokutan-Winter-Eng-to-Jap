@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>速単冬休み範囲【英⇒日】</title>
+  <title>英単語４択クイズ（英→日）</title>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -161,6 +161,7 @@
       padding-top: 10px;
       border-top: 1px solid #ddd;
       font-size: 0.95rem;
+      text-align: left;
     }
     #summary h2 {
       font-size: 1.1rem;
@@ -207,18 +208,22 @@
   </style>
 </head>
 <body>
-  <h1>速単冬休み範囲【英⇒日】</h1>
+  <h1>英単語４択クイズ（英→日）</h1>
 
   <div id="controls">
-    <!-- 1段目：15問／MAX／前回×／×多い -->
+    <!-- 1段目：15問／MAX -->
     <div class="btn-row">
       <button id="random15Btn" class="pill-btn">15問</button>
       <button id="maxSetBtn" class="pill-btn">MAX（--問）に挑戦</button>
+    </div>
+
+    <!-- 2段目：前回×の語／×が多い語 -->
+    <div class="btn-row">
       <button id="retryLastBtn" class="pill-btn">前回×の語</button>
       <button id="retryTopBtn" class="pill-btn">×が多い語</button>
     </div>
 
-    <!-- 2段目：学習記録／トップページ -->
+    <!-- 3段目：学習記録／トップページ -->
     <div class="btn-row">
       <button id="showLogBtn" class="pill-btn">学習記録</button>
       <button id="homeBtn" class="pill-btn"
@@ -227,7 +232,7 @@
       </button>
     </div>
 
-    <!-- 将来用に残しておく hidden 50問ボタン（画面には出ません） -->
+    <!-- 将来用 hidden 50問ボタン -->
     <button id="random50Btn" class="pill-btn" style="display:none;">50問</button>
 
     <span id="status"></span>
@@ -971,6 +976,7 @@
         `進行状況：${current + 1} / ${quizQuestions.length}問中　正解 ${correctCount}問`;
     }
 
+    // 「今回の間違えた問題」表示（表形式・左寄せ・品詞は (v) のように）
     function renderSummary() {
       const summaryDiv = document.getElementById('summary');
 
@@ -994,18 +1000,25 @@
           : '今回の再チャレンジで間違えた問題';
 
       let html = `<h2>${title}</h2>`;
-      html += '<p>英語と正しい日本語訳をもう一度確認しましょう。</p>';
-      html += '<ol>';
+      html += '<p>英語と日本語訳、品詞をもう一度確認しましょう。</p>';
+
+      html += '<table style="border-collapse:collapse; font-size:0.95rem; text-align:left; width:auto;">';
+      html += '<thead><tr>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">日本語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:right;">品詞</th>' +
+              '</tr></thead><tbody>';
 
       incorrectList.forEach(item => {
-        html += `<li><strong>${item.questionText}</strong> → ${item.correctText}`;
-        if (item.pos) {
-          html += ` <span style="color:#777; font-size:0.85rem;">（品詞: ${item.pos}）</span>`;
-        }
-        html += '</li>';
+        const posText = item.pos ? `(${item.pos})` : '';
+        html += '<tr>' +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.questionText}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${item.correctText}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px; text-align:right;">${posText}</td>` +
+        '</tr>';
       });
 
-      html += '</ol>';
+      html += '</tbody></table>';
 
       if (currentMode === 'retryLast' || currentMode === 'retryTop') {
         html += '<p style="font-size:0.85rem; color:#777;">※ このモードでの誤答は「学習記録」には加算されません。</p>';
@@ -1018,15 +1031,17 @@
       }
     }
 
-    // 学習記録：左詰め・コンパクト表示
+    // 学習記録：誤答0は表示しない・表形式・左寄せ・幅を狭く
     function showStatsOnPage() {
       const logDiv = document.getElementById('log');
       loadStats();
 
-      const entries = Object.entries(stats);
+      let entries = Object.entries(stats)
+        .filter(([eng, data]) => (data.wrong || 0) > 0);
+
       if (entries.length === 0) {
         logDiv.innerHTML =
-          '<h2>学習記録</h2><p>まだ間違えた単語の記録がありません。</p>';
+          '<h2>学習記録</h2><p>誤答の記録がありません。</p>';
         return;
       }
 
@@ -1039,17 +1054,25 @@
 
       let html = '<h2>学習記録</h2>';
       html += '<p style="font-size:0.85rem; color:#555;">よく間違える単語から順に表示しています。（「前回×の語」「×が多い語」での誤答は含みません）</p>';
-      html += '<ul style="list-style:none; padding-left:0; margin-left:0;">';
+
+      html += '<table style="border-collapse:collapse; font-size:0.9rem; text-align:left; width:auto;">';
+      html += '<thead><tr>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">英単語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:left;">日本語</th>' +
+              '<th style="border-bottom:1px solid #ccc; padding:2px 6px; text-align:right;">回</th>' +
+              '</tr></thead><tbody>';
 
       entries.forEach(([eng, data]) => {
         const jp = data.jp || '';
         const w = data.wrong || 0;
-        html += `<li style="border-bottom:1px solid #eee; padding:2px 0;">` +
-                `<strong>${eng}</strong> － ${jp}` +
-                `（誤答：${w}回）</li>`;
+        html += '<tr>' +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${eng}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px;">${jp}</td>` +
+          `<td style="border-bottom:1px solid #eee; padding:2px 6px; text-align:right;">${w}回</td>` +
+        '</tr>';
       });
 
-      html += '</ul>';
+      html += '</tbody></table>';
       logDiv.innerHTML = html;
     }
 
